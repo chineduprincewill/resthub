@@ -8,13 +8,16 @@ import { Dialog, DialogContent, DialogTitle, DialogTrigger } from '../../compone
 import { AppContext } from '../../context/AppContext';
 import { dashboardStatistics } from '../../utils/resthubfunction';
 import ManageRequests from './manage-requests';
+import { useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
 
     const { token, user } = useContext(AppContext)
+    const navigate = useNavigate();
     const [statistics, setStatistics] = useState([])
     const [error, setError] = useState();
     const [isLoading, setIsLoading] = useState(false)
+    const requestsAccess = ['NTRL', 'NRL', 'Admin']
 
     useEffect(() => {
         dashboardStatistics(token, setStatistics, setError, setIsLoading)
@@ -29,8 +32,9 @@ const Dashboard = () => {
     return (
         <div className="p-4 grid gap-4">
             <div className="bg-background border border-border rounded-lg p-6">
-                <div className={`grid ${user && JSON.parse(user).organization_category !== 'NTRL' ? 'md:grid-cols-4' : 'md:grid-cols-3'} gap-4`}>
+                <div className={`grid ${user && JSON.parse(user).organization_category !== 'NTRL' ? 'md:grid-cols-3' : 'md:grid-cols-3'} gap-4`}>
                 {
+                    user && requestsAccess.includes(JSON.parse(user).organization_category) &&
                     <div
                         className="bg-gray-100 dark:bg-accent/10 flex items-center justify-between h-auto py-3 px-4 rounded-md"
                     >
@@ -96,6 +100,27 @@ const Dashboard = () => {
                         </div>
                         <div className='p-2 bg-foreground/10 rounded-md'>
                             <span className='text-3xl'>{statistics && statistics.unentered}</span>
+                        </div>
+                    </div>
+                }
+                {
+                    user && JSON.parse(user).organization_category === 'Admin' &&
+                    <div
+                        className="bg-gray-100 dark:bg-accent/10 flex items-center justify-between h-auto py-3 px-4 rounded-md"
+                    >
+                        <div>
+                            <p className="text-lg font-extralight text-foreground">Awaiting Activation</p>
+                            <p className="text-xs text-muted-foreground hover:text-foreground mt-1 cursor-pointer">
+                                <span 
+                                    className='cursor-pointer hover:text-accent'
+                                    onClick={() => navigate('/accounts')}
+                                >
+                                    Click to view accounts awaiting activation
+                                </span>
+                            </p>
+                        </div>
+                        <div className={`p-2 rounded-md ${statistics && statistics.unactivated > 0 ? 'bg-accent text-white' : 'bg-foreground/10'}`}>
+                            <span className='text-3xl'>{statistics && statistics.unactivated}</span>
                         </div>
                     </div>
                 }

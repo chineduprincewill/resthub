@@ -48,12 +48,12 @@ export const useAuth = () => {
   );
 
   const signup = useCallback(
-    async (fullname, email, password) => {
+    async (fullname, email, password, confirm_password) => {
       setIsLoading(true);
       setError(null);
 
       try {
-        const response = await authSignup(fullname, email, password);
+        const response = await authSignup(fullname, email, password, confirm_password);
         
       } catch (err) {
         const errorMessage =

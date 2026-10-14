@@ -66,7 +66,7 @@ const SignUp = () => {
         }
 
         try {
-            await signup(fullname, email, password);
+            await signup(fullname, email, password, confirm_password);
             toast.success("Account created successfully!", {
                 className: "!bg-green-700 !text-white !border-white !font-bold",
                 descriptionClassName: "!text-green-700",

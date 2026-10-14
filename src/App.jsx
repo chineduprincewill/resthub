@@ -24,6 +24,7 @@ import UserRecords from "./auth-pages/user-records/user-records";
 import MedgemmaAi from "./public/medgemma-ai";
 import AddSamplePage from "./auth-pages/add-sample/add-sample-page";
 import SamplePage from "./auth-pages/add-sample/sample-page";
+import Users from "./auth-pages/user-records/users";
 
 function App() {
 
@@ -61,6 +62,7 @@ function App() {
                     <Route path="/records" element={<ProtectedRoute><UserRecords /></ProtectedRoute>} />
                     <Route path="/reports" element={<ProtectedRoute><Reports /></ProtectedRoute>} />
                     <Route path="/configurations" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+                    <Route path="/accounts" element={<ProtectedRoute><Users /></ProtectedRoute>} />
                   </Route>
               </Routes>
             </Router>

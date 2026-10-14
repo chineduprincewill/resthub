@@ -25,9 +25,9 @@ const PasswordUpdate = () => {
 
         const data = {
             id,
-            currentPassword,
-            newPassword,
-            confirmPassword
+            current_password:currentPassword,
+            new_password:newPassword,
+            confirm_password:confirmPassword
         }
 
         if(newPassword !== confirmPassword){

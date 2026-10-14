@@ -18,7 +18,7 @@ import { useState } from "react"
 import { cn } from "@/lib/utils"
 
 
-const ComboboxComponent = ({ comboOptions, value, setValue, fetching }) => {
+const ComboboxComponent = ({ comboOptions, value, setValue, fetching, plc }) => {
     const [open, setOpen] = useState(false)
     //const [value, setValue] = useState("")
   
@@ -32,8 +32,8 @@ const ComboboxComponent = ({ comboOptions, value, setValue, fetching }) => {
             className="w-full justify-between"
           >
             {value
-              ? comboOptions.find((cmb) => cmb.label === value)?.label
-              : "Select option..."}
+              ? comboOptions && comboOptions.find((cmb) => cmb.label === value)?.label
+              : (plc ? plc : "Select option...")}
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>

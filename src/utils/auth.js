@@ -106,14 +106,14 @@ export const logout = async () => {
 };
 
 
-export const signup = async (fullname, email, password) => {
+export const signup = async (fullname, email, password, confirm_password) => {
   const API_BASE = import.meta.env.VITE_BASE_URL || "https://api.example.com"; // update to your backend
   const url = `${API_BASE}/register`;
 
   try {
     const response = await axios.post(
       url,
-      { email, password, fullname },
+      { fullname, email, password, confirm_password },
       {
         headers: { "Content-Type": "application/json", "Accept": "application/json" },
         // withCredentials: true, // enable if your API uses cookies

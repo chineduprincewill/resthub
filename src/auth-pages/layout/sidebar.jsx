@@ -15,6 +15,7 @@ import {
   FolderInput,
   Cog,
   Settings,
+  Users,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "../../hooks/useAuth";
@@ -53,6 +54,7 @@ const Sidebar = ({ isOpen, onClose, isCollapsed, onCollapsedChange }) => {
     const adminNavItems = [
         { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
         { href: "/sample", label: "Samples", icon: FolderPlus },
+        { href: "/accounts", label: "Accounts", icon: Users },
         { href: "/configurations", label: "Configurations", icon: Cog },
     ];
 
