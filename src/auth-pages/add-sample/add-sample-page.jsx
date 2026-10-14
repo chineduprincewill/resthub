@@ -74,10 +74,33 @@ const AddSamplePage = ({ setActive, editrecord, setEditrecord, fmtitle, step }) 
       
     const removeSequencingRun = (runIndex) => setSequencingPredictionRuns((p) => p.filter((_, i) => i !== runIndex));
 
-    const navigateForward = () => {
+    /**const navigateForward = () => {
         const ci = parseInt(categoryIndex) + 1;
         setCategoryIndex(ci);
-    }
+    }*/
+
+    const navigateForward = () => {
+        const errors = validateForm();
+    
+        // Only care about errors belonging to the current category
+        const currentCategoryErrors = formfields
+            .filter(f => f.forms_sub_title === currentCategory)
+            .map(f => errors[f.forms_text])
+            .filter(Boolean);
+    
+        if (currentCategoryErrors.length > 0) {
+            showValidationToast(
+                Object.fromEntries(
+                    Object.entries(errors).filter(([k]) =>
+                        formfields.some(f => f.forms_text === k && f.forms_sub_title === currentCategory)
+                    )
+                )
+            );
+            return;
+        }
+    
+        setCategoryIndex(parseInt(categoryIndex) + 1);
+    };    
 
     const navigateBackward = () => {
         const ci = parseInt(categoryIndex) - 1;
@@ -293,7 +316,8 @@ const AddSamplePage = ({ setActive, editrecord, setEditrecord, fmtitle, step }) 
       
         setFielderrors(newErrors);
       
-        return Object.keys(newErrors).length === 0;
+        //return Object.keys(newErrors).length === 0;
+        return newErrors;
     };
 
     //const formsSubTitleArray = formfields && extractFormsSubTitleValues(formfields);
@@ -383,10 +407,50 @@ const AddSamplePage = ({ setActive, editrecord, setEditrecord, fmtitle, step }) 
         }
     };
 
+    const showValidationToast = (errors) => {
+        const errorList = Object.values(errors).filter(Boolean);
+    
+        if (errorList.length === 0) return;
+    
+        toast.error(
+            errorList.length === 1
+                ? errorList[0]
+                : `${errorList.length} required fields are missing`,
+            {
+                className: "!bg-red-700 !text-white !border-white !font-bold",
+                description: errorList.length > 1
+                    ? errorList.slice(0, 4).join(' • ') +
+                      (errorList.length > 4 ? ` • +${errorList.length - 4} more` : '')
+                    : undefined,
+                descriptionClassName: "!text-white font-extralight text-sm",
+                duration: 5000,
+            }
+        );
+    };
+
+    const scrollToFirstError = (errors) => {
+        const firstKey = Object.keys(errors)[0];
+        if (!firstKey) return;
+    
+        // matches the field.forms_text used in your rendered inputs
+        const el = document.querySelector(`[name="${CSS.escape(firstKey)}"]`);
+        if (el) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            el.focus?.();
+        }
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        if (!validateForm()) return; // optional — keep your existing validation
+        //if (!validateForm()) return; // optional — keep your existing validation
+        const errors = validateForm();
+
+        if (Object.keys(errors).length > 0) {
+            showValidationToast(errors);
+            scrollToFirstError(errors);
+            return;
+        }
 
         const payload = buildSubmitPayload();   // <── call this
         //console.log(payload);  
