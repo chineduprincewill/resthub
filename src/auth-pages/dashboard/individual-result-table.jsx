@@ -9,7 +9,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { FileDown } from "lucide-react";
 
-const IndividualResultTable = ({ data, onExportPDF }) => {
+const IndividualResultTable = ({ data }) => {
   const [processedDrugData, setProcessedDrugData] = useState([]);
   const [sequencingData, setSequencingData] = useState([]);
 
@@ -219,21 +219,11 @@ const IndividualResultTable = ({ data, onExportPDF }) => {
           <TableBody>
             {/* Patient Information Section */}
             <TableRow className="font-bold bg-muted/30">
-              <TableCell className="font-semibold" colSpan={3}>Participant ID</TableCell>
-              <TableCell colSpan={5}>
+              <TableCell className="font-semibold" colSpan={2}>Participant ID</TableCell>
+              <TableCell colSpan={9}>
                 <span id="individualResultParticipantId">{data.participant_id}</span>
               </TableCell>
-              <TableCell colSpan={3}>
-                <Button 
-                  onClick={onExportPDF} 
-                  variant="outline" 
-                  size="sm"
-                  className="gap-2"
-                >
-                  <FileDown className="h-4 w-4" />
-                  PDF
-                </Button>
-              </TableCell>
+              
             </TableRow>
 
             <TableRow className="font-bold">

@@ -1,10 +1,12 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card'
 import ComboboxComponent from '../../components/combobox-component'
 import { Button } from '../../components/ui/button';
 import { AppContext } from '../../context/AppContext';
 import { getIndividualDashboardReport, getSamplesForDashboard } from '../../utils/resthubfunction';
 import IndividualResultTable from './individual-result-table';
+import { downloadElementAsPdf } from '../../utils/downloadAsPdf';
+import { FileDown } from 'lucide-react';
 
 const IndividualReport = () => {
 
@@ -15,6 +17,19 @@ const IndividualReport = () => {
     const [fetching, setFetching] = useState(false);
     const [error, setError] = useState();
     const [report, setReport] = useState();
+    const reportRef = useRef(null);
+    const [downloading, setDownloading] = useState(false);
+
+    const handleDownload = async () => {
+        setDownloading(true);
+        try {
+        await downloadElementAsPdf(reportRef.current, 'individual-report', {
+            orientation: 'landscape',
+        });
+        } finally {
+            setDownloading(false);
+        }
+    };
 
     const handleRun = (e) => {
         e.preventDefault();
@@ -59,9 +74,22 @@ const IndividualReport = () => {
                     </form>
                 </CardContent>
             </Card>
-            <Card className="w-full mb-4">
+            <Card ref={reportRef}  className="w-full mb-4">
                 <CardHeader>
-                    <CardTitle>Result</CardTitle>
+                    <CardTitle className="flex items-center justify-between">
+                        <span>Result</span>
+                    {
+                        report &&
+                        <Button 
+                            onClick={handleDownload} 
+                            variant="outline" 
+                            className={`gap-1 ${downloading && 'border-2 border-accent animate-pulse'}`}
+                        >
+                            <FileDown className="h-4 w-4" />
+                            {downloading ? 'Downloading...' : 'Download PDF'}
+                        </Button>
+                    }
+                    </CardTitle>
                     <CardDescription>
                     </CardDescription>
                 </CardHeader>
@@ -69,8 +97,7 @@ const IndividualReport = () => {
                 {
                     report && 
                     <IndividualResultTable 
-                        data={report} 
-                        onExportPDF={handleExportPDF}
+                        data={report}
                     />
                 }
                 </CardContent>
