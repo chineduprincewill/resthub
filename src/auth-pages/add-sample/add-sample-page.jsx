@@ -646,7 +646,7 @@ const AddSamplePage = ({ setActive, editrecord, setEditrecord, fmtitle, step }) 
                                         value={safeValue}
                                         onValueChange={(value) => handleInputChange(field, field.forms_text, value)}
                                     >
-                                        <SelectTrigger className="w-full">
+                                        <SelectTrigger className="w-full rounded-none bg-input h-10">
                                             <SelectValue placeholder={listing ? `listing ${field.forms_text}` : `Select value`} />
                                         </SelectTrigger>
                                         <SelectContent>
@@ -709,7 +709,7 @@ const AddSamplePage = ({ setActive, editrecord, setEditrecord, fmtitle, step }) 
                                                 <label
                                                     key={option}
                                                     htmlFor={id}
-                                                    className="flex items-center gap-2 cursor-pointer"
+                                                    className="flex items-center gap-2 cursor-pointer mt-2"
                                                 >
                                                     <input
                                                         type="checkbox"
@@ -717,7 +717,7 @@ const AddSamplePage = ({ setActive, editrecord, setEditrecord, fmtitle, step }) 
                                                         name={field.forms_text}
                                                         value={option}
                                                         checked={isChecked}
-                                                        className="rounded w-6 h-6"
+                                                        className="rounded w-4 h-4"
                                                         onChange={(e) => toggle(option, e.target.checked)}
                                                     />
                                                     <span className="text-sm">{option}</span>
@@ -732,7 +732,7 @@ const AddSamplePage = ({ setActive, editrecord, setEditrecord, fmtitle, step }) 
                                 <PopoverTrigger asChild>
                                     <Button
                                         variant="outline"
-                                        className="w-full justify-between text-left font-normal"
+                                        className="w-full justify-between text-left font-normal rounded-none bg-input h-10"
                                     >
                                         {formdata[field.forms_text] ? 
                                             format(new Date(formdata[field.forms_text]), 'PPP') : 
@@ -798,6 +798,7 @@ const AddSamplePage = ({ setActive, editrecord, setEditrecord, fmtitle, step }) 
                                     <Input
                                       type="date"
                                       value={row.date}
+                                      className="rounded-none bg-input h-10"
                                       onChange={(e) =>
                                         handleRadioChange(field, drug, { date: e.target.value })
                                       }
@@ -814,7 +815,7 @@ const AddSamplePage = ({ setActive, editrecord, setEditrecord, fmtitle, step }) 
                                 value={formdata[field.forms_text] || ''} // Changed from editinfo
                                 placeholder={`Enter value`}
                                 required={field.control === 1 && 'required'}
-                                className="w-full"
+                                className="w-full rounded-none bg-input h-10"
                                 onChange={(e) => handleInputChange(field, field.forms_text, e.target.value)}
                                 onKeyDown={(e) => handleKeyDown(e, field)}
                                 inputMode={(field.forms_type === 'number' || field.forms_type === 'decimal') && "numeric"}
@@ -873,7 +874,7 @@ const AddSamplePage = ({ setActive, editrecord, setEditrecord, fmtitle, step }) 
                                                 setSequencingValue(runIndex, field, v)
                                             }
                                             >
-                                            <SelectTrigger className="w-full">
+                                            <SelectTrigger className="w-full rounded-none bg-input h-10">
                                                 <SelectValue placeholder="Select" />
                                             </SelectTrigger>
                                             <SelectContent>
@@ -912,7 +913,7 @@ const AddSamplePage = ({ setActive, editrecord, setEditrecord, fmtitle, step }) 
                                                 setSequencingValue(runIndex, field, e.target.value)
                                             }
                                             onKeyDown={(e) => handleKeyDown(e, field)}
-                                            className="w-full"
+                                            className="w-full rounded-none bg-input h-10"
                                             />
                                         )}
 
