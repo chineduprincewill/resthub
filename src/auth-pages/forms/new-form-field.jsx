@@ -27,6 +27,7 @@ const NewFormField = ({ forms_title, formdata, action }) => {
     const [field_trigger, setField_trigger] = useState(formdata && formdata.field_trigger);
     const [trigger_value, setTrigger_value] = useState(formdata && formdata.trigger_value);
     const [version, setVersion] = useState('1.0')
+    const [is_caption, setIs_caption] = useState(formdata && formdata.is_caption)
     const [success, setSuccess] = useState();
     const [error, setError] = useState();
     const [adding, setAdding] = useState(false);
@@ -70,6 +71,7 @@ const NewFormField = ({ forms_title, formdata, action }) => {
             control,
             forms_type_options,
             version,
+            is_caption,
             field_trigger,
             trigger_value
         }
@@ -98,6 +100,7 @@ const NewFormField = ({ forms_title, formdata, action }) => {
         setForms_type('');
         setForms_type_options('');
         setVersion('');
+        setIs_caption('')
         setTrigger_value('');
         refreshRecord(Date.now());
     }
@@ -171,6 +174,22 @@ const NewFormField = ({ forms_title, formdata, action }) => {
                     required
                     className="w-full"
                 />
+                <Select
+                    value={is_caption}
+                    onValueChange={setIs_caption}
+                    required
+                >
+                    <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select if is caption field *" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectGroup>
+                            <SelectLabel>Is Caption?</SelectLabel>
+                            <SelectItem value="No">No</SelectItem>
+                            <SelectItem value="Yes">Yes</SelectItem>
+                        </SelectGroup>
+                    </SelectContent>
+                </Select>
                 <RadioGroup
                     value={(control == 1 || control === '1') ? 1 : 2}
                     className="flex items-center gap-3"

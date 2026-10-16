@@ -24,19 +24,54 @@ const FormFields = ({ forms_title }) => {
     const [action, setAction] = useState();
     
     const columns = [
+        
         {
-            accessorKey: 'forms_text_id',
-            header: 'Field order',
-            cell: ({row}) => {
-                const field = row.original;
-                return(
-                    <div className='grid gap-0'>
-                        <span className="text-muted-foreground font-extralight">{field.forms_text_id}</span>
+            id: 'actions',
+            cell: ({ row }) => {
+            const form = row.original; 
+            return (
+                <div className="flex items-center gap-3">
+                    <span className="text-muted-foreground font-extralight">{form.forms_text_id}</span>
+                    <div className='flex items-center p-0.5 gap-1 rounded-full border border-muted-foreground/40 bg-muted-foreground/10'>
+                        <CircleCheck 
+                            className={`!w-4 !h-4 ${form.status === 1 ? 'text-green-600' : 'text-muted-foreground/20 cursor-pointer hover:text-green-400'} ${updating && form.id === field_id && action === 'activate' && 'animate-spin text-green-600'}`} 
+                            onClick={() => form.status === 0 && activateField(form.id, form.forms_text, 'activate')}
+                        />
+                        <CircleX 
+                            className={`!w-4 !h-4 ${form.status === 0 ? 'text-red-600' : 'text-muted-foreground/20 cursor-pointer hover:text-red-400'} ${updating && form.id === field_id && action === 'disable' && 'animate-spin text-red-600'}`} 
+                            onClick={() =>  form.status === 1 && disableField(form.id, form.forms_text, 'disable')}
+                        />
                     </div>
-                )
+                {
+                    form.status === 1 &&
+                    <>
+                    <Dialog>
+                        <DialogTrigger asChild>
+                            <Edit 
+                                className="h-4 w-4 cursor-pointer" 
+                            />
+                        </DialogTrigger>
+                        <DialogContent>
+                            <DialogTitle>Edit field</DialogTitle>
+                            <NewFormField forms_title={forms_title} formdata={form} action='edit' />
+                        </DialogContent>
+                    </Dialog>
+                    <Dialog>
+                        <DialogTrigger asChild>
+                            <Copy 
+                                className="h-4 w-4 cursor-pointer" 
+                            />
+                        </DialogTrigger>
+                        <DialogContent>
+                            <DialogTitle>Copy field</DialogTitle>
+                            <NewFormField forms_title={forms_title} formdata={form} action='copy' />
+                        </DialogContent>
+                    </Dialog>
+                    </>
+                }
+                </div>
+            );
             },
-            enableSorting: true,
-            enableColumnFilter: true,
         },
         {
             accessorKey: 'forms_text',
@@ -47,6 +82,20 @@ const FormFields = ({ forms_title }) => {
                     <div className='grid gap-0'>
                         <span className="text-muted-foreground font-extralight text-xs">{field.forms_sub_title}</span>
                         <span className="font-extralight">{field.forms_text}</span>
+                    </div>
+                )
+            },
+            enableSorting: true,
+            enableColumnFilter: true,
+        },
+        {
+            accessorKey: 'is_caption',
+            header: 'Is caption?',
+            cell: ({row}) => {
+                const field = row.original;
+                return(
+                    <div className='grid gap-0'>
+                        <span className="font-extralight text-muted-foreground">{field.is_caption}</span>
                     </div>
                 )
             },
@@ -97,53 +146,6 @@ const FormFields = ({ forms_title }) => {
             },
             enableSorting: true,
             enableColumnFilter: true,
-        },
-        {
-            id: 'actions',
-            cell: ({ row }) => {
-            const form = row.original; 
-            return (
-                <div className="flex justify-end items-center gap-3">
-                {
-                    form.status === 1 &&
-                    <>
-                    <Dialog>
-                        <DialogTrigger asChild>
-                            <Edit 
-                                className="h-4 w-4 cursor-pointer" 
-                            />
-                        </DialogTrigger>
-                        <DialogContent>
-                            <DialogTitle>Edit field</DialogTitle>
-                            <NewFormField forms_title={forms_title} formdata={form} action='edit' />
-                        </DialogContent>
-                    </Dialog>
-                    <Dialog>
-                        <DialogTrigger asChild>
-                            <Copy 
-                                className="h-4 w-4 cursor-pointer" 
-                            />
-                        </DialogTrigger>
-                        <DialogContent>
-                            <DialogTitle>Copy field</DialogTitle>
-                            <NewFormField forms_title={forms_title} formdata={form} action='copy' />
-                        </DialogContent>
-                    </Dialog>
-                    </>
-                }
-                    <div className='flex items-center p-0.5 gap-1 rounded-full border border-muted-foreground/40 bg-muted-foreground/10'>
-                        <CircleCheck 
-                            className={`!w-4 !h-4 ${form.status === 1 ? 'text-green-600' : 'text-muted-foreground/20 cursor-pointer hover:text-green-400'} ${updating && form.id === field_id && action === 'activate' && 'animate-spin text-green-600'}`} 
-                            onClick={() => form.status === 0 && activateField(form.id, form.forms_text, 'activate')}
-                        />
-                        <CircleX 
-                            className={`!w-4 !h-4 ${form.status === 0 ? 'text-red-600' : 'text-muted-foreground/20 cursor-pointer hover:text-red-400'} ${updating && form.id === field_id && action === 'disable' && 'animate-spin text-red-600'}`} 
-                            onClick={() =>  form.status === 1 && disableField(form.id, form.forms_text, 'disable')}
-                        />
-                    </div>
-                </div>
-            );
-            },
         },
     ];
 

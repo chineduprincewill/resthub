@@ -80,23 +80,29 @@ const AddSamplePage = ({ setActive, editrecord, setEditrecord, fmtitle, step }) 
     }*/
 
     const navigateForward = () => {
-        const errors = validateForm();
+
+        if(user && (JSON.parse(user).organization_category === 'NTRL' || JSON.parse(user).organization_category === 'NRL')){
+            const errors = validateForm();
+        //}
     
         // Only care about errors belonging to the current category
-        const currentCategoryErrors = formfields
+        //if(user && (JSON.parse(user).organization_category === 'NTRL' || JSON.parse(user).organization_category === 'NRL')){
+            const currentCategoryErrors = formfields
             .filter(f => f.forms_sub_title === currentCategory)
             .map(f => errors[f.forms_text])
             .filter(Boolean);
+       // }
     
-        if (currentCategoryErrors.length > 0) {
-            showValidationToast(
-                Object.fromEntries(
-                    Object.entries(errors).filter(([k]) =>
-                        formfields.some(f => f.forms_text === k && f.forms_sub_title === currentCategory)
+            if (currentCategoryErrors.length > 0) {
+                showValidationToast(
+                    Object.fromEntries(
+                        Object.entries(errors).filter(([k]) =>
+                            formfields.some(f => f.forms_text === k && f.forms_sub_title === currentCategory)
+                        )
                     )
-                )
-            );
-            return;
+                );
+                return;
+            }
         }
     
         setCategoryIndex(parseInt(categoryIndex) + 1);
@@ -257,24 +263,25 @@ const AddSamplePage = ({ setActive, editrecord, setEditrecord, fmtitle, step }) 
         const actual = formData[field.field_trigger];
         const expected = field.trigger_value;
     
-        // Normalize both sides to trimmed strings for comparison
         const normalize = (v) => (v == null ? '' : String(v).trim());
     
-        // Support comma-separated trigger values (any match passes)
+        // Comma-separated trigger values (any match passes)
         const expectedList = String(expected)
             .split(',')
             .map(s => s.trim())
             .filter(Boolean);
     
-        const actualStr = normalize(actual);
+        // 🔑 Normalize the ACTUAL value into an array of tokens,
+        // whether it's already an array or a comma-separated string.
+        const actualList = Array.isArray(actual)
+            ? actual.map(normalize).filter(Boolean)
+            : normalize(actual)
+                .split(',')
+                .map(s => s.trim())
+                .filter(Boolean);
     
-        // For array values (checkbox), any element matching passes
-        if (Array.isArray(actual)) {
-            const actualSet = actual.map(normalize);
-            return expectedList.some(v => actualSet.includes(v));
-        }
-    
-        return expectedList.includes(actualStr);
+        // Render if ANY expected value is present in the actual list
+        return expectedList.some(v => actualList.includes(v));
     };
     
     function validateField(field, value, formData) {
@@ -532,6 +539,14 @@ const AddSamplePage = ({ setActive, editrecord, setEditrecord, fmtitle, step }) 
                         transformed[field.forms_text] = d.toISOString();
                     }
                 }
+
+                // 👇 NEW: normalize checkbox values to arrays
+                if (field.forms_type === 'checkbox' && transformed[field.forms_text] != null) {
+                    const v = transformed[field.forms_text];
+                    transformed[field.forms_text] = Array.isArray(v)
+                        ? v
+                        : String(v).split(',').map(s => s.trim()).filter(Boolean);
+                }
             });
             
             setFormdata(transformed);
@@ -602,13 +617,14 @@ const AddSamplePage = ({ setActive, editrecord, setEditrecord, fmtitle, step }) 
                     return <div key={field.id} 
                         className={
                             `w-full 
-                            ${field?.forms_sub_title !== 'Culture/DST' ? 'md:w-[30%]' : (
+                            ${field.field_trigger && 'p-3 border border-accent/50'}
+                            ${field?.forms_sub_title !== 'Culture/DST' ? (field.is_caption === 'Yes' ? 'md:w-full' : 'md:w-[30%]') : (
                                 field.forms_text.includes('result') && 'md:w-[30%] md:gap-2'
                             )} 
                             ${field?.forms_sub_title === currentCategory || (!currentCategory && categories && field?.forms_sub_title === categories[0]) ? 'grid' : 'hidden'}`
                             }
                         >
-                        <Label className={`block text-sm font-medium mb-2 ${field.forms_text.includes('result') && 'p-2 flex justify-between items-center border border-accent bg-accent/5'}`}>
+                        <Label className={`block text-sm font-medium mb-2 ${field.forms_text.includes('result') && 'p-2 flex justify-between items-center border border-accent bg-accent/5'} ${field.is_caption === 'Yes' && 'bg-input/40 p-3 border border-foreground/10'}`}>
                             <div className='flex items-center gap-0'>
                             {field.forms_text}
                             {field.control === 1 && <span className="text-destructive ml-1">*</span>}
@@ -626,6 +642,7 @@ const AddSamplePage = ({ setActive, editrecord, setEditrecord, fmtitle, step }) 
                             <Textarea 
                                 placeholder={field.forms_text}
                                 onChange={(e) => handleInputChange(field, field.forms_text, e.target.value)}
+                                rows="3"
                                 name={field.forms_text}
                                 value={formdata[field.forms_text] || ''} // Changed from editinfo
                             />
