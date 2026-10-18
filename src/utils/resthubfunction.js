@@ -321,7 +321,7 @@ export const updateStatus = async (token, data, setSuccess, setError, setUpdatin
     setUpdating(true);
     try{
         //console.log(token)
-        const response  = await axios.post(`${API_BASE}/update-status`,
+        const response  = await axios.post(`${API_BASE}/update-field-status`,
             data,
             {
                 headers: { 

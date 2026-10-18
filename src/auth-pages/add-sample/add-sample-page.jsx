@@ -618,7 +618,7 @@ const AddSamplePage = ({ setActive, editrecord, setEditrecord, fmtitle, step }) 
                         className={
                             `w-full 
                             ${field.field_trigger && 'p-3 border border-accent/50'}
-                            ${field?.forms_sub_title !== 'Culture/DST' ? (field.is_caption === 'Yes' ? 'md:w-full' : 'md:w-[30%]') : (
+                            ${field?.forms_sub_title !== 'Culture/DST' ? (field.is_caption === 'Yes' ? 'md:w-full' : (field.field_trigger === 'gDNA Extraction/Inactivation Method' ? 'md:w-[48%]' : 'md:w-[30%]')) : (
                                 field.forms_text.includes('result') && 'md:w-[30%] md:gap-2'
                             )} 
                             ${field?.forms_sub_title === currentCategory || (!currentCategory && categories && field?.forms_sub_title === categories[0]) ? 'grid' : 'hidden'}`

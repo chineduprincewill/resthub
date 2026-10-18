@@ -177,6 +177,7 @@ const FormFields = ({ forms_title }) => {
                 id:fldid,
                 action:'disable'
             }
+            //alert(JSON.stringify(data))
 
             updateStatus(token, data, setSuccess, setError, setUpdating)
         }
