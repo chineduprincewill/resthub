@@ -57,11 +57,11 @@ const SamplePage = () => {
                     </Dialog>
                     <div className='flex items-center gap-4'>
                     {
-                        user && (JSON.parse(user).organization_category === 'NTRL' || JSON.parse(user).organization_category === 'NRL') && 
+                        //user && (JSON.parse(user).organization_category === 'NTRL' || JSON.parse(user).organization_category === 'NRL') && 
                         <FilterOptions setFilter={setFilter} filter={filter} />
                     }
                     {
-                        user && JSON.parse(user).organization_category === 'NTRL' && filter && filter !== '' &&
+                        filter && filter !== '' && user && JSON.parse(user).organization_category !== 'NRL' &&
                         <CircleX 
                             className='!w-4 !h-4 cursor-pointer text-red-500 hover:text-red-700' 
                             onClick={() => setFilter('')}

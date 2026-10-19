@@ -10,10 +10,20 @@ const FilterOptions = ({ setFilter, filter }) => {
     options = user && JSON.parse(user).organization_category === 'NTRL' ? [
         { value: "Awaiting sample shipment", label: "Awaiting sample shipment", color: "accent" },
     ] : 
-    [
-        { value: "Awaiting sample receipt", label: "Awaiting sample receipt", color: "accent" },     // red-600
-        { value: "Awaiting result entry", label: "Awaiting result entry", color: "accent" }
-    ]
+    (
+        user && JSON.parse(user).organization_category === 'NRL' ? 
+        [
+            { value: "Awaiting sample receipt", label: "Awaiting sample receipt", color: "accent" },     // red-600
+            { value: "Awaiting result entry", label: "Awaiting result entry", color: "accent" },
+            { value: "Result entered", label: "Result entered", color: "accent" }
+        ] :
+        [
+            { value: "Awaiting sample shipment", label: "Awaiting sample shipment", color: "accent" },
+            { value: "Awaiting sample receipt", label: "Awaiting sample receipt", color: "accent" },     // red-600
+            { value: "Awaiting result entry", label: "Awaiting result entry", color: "accent" },
+            { value: "Result entered", label: "Result entered", color: "accent" }
+        ]
+    )
 
 
     return (

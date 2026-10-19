@@ -25,9 +25,10 @@ const SampleLog = ({ headers, excluded, setActive, setEditrecord, setStep, filte
     const [search, setSearch] = useState("")
 
     const recordFilter = useMemo(() => {
-        let filtered = records && records;
+        let filtered = records && records.filter( record => 
+            (user && JSON.parse(user).organization_category === 'NRL') ? (record && 'Shipment Date' in record) : record);
 
-        if(user && JSON.parse(user).organization_category === 'NRL' && filter){
+        /**if(user && JSON.parse(user).organization_category === 'NRL' && filter){
             if(filter === 'Awaiting result entry'){
                 filtered = records && records.filter(record => record && 'gDNA Extract Receipt Date' in record)
             }
@@ -40,6 +41,21 @@ const SampleLog = ({ headers, excluded, setActive, setEditrecord, setStep, filte
             if(filter === 'Awaiting sample shipment'){
                 filtered = records && records.filter(record => record && !('Shipment Date' in record));
             }
+        }*/
+        if(filter === 'Awaiting sample shipment'){
+            filtered = records && records.filter(record => record && !('Shipment Date' in record));
+        }
+        
+        if(filter === 'Awaiting sample receipt'){
+            filtered = records && records.filter(record => record && ('Shipment Date' in record) && !('gDNA Extract Receipt Date' in record));
+        }
+
+        if(filter === 'Awaiting result entry'){
+            filtered = records && records.filter(record => record && ('gDNA Extract Receipt Date' in record) && !('Multiplex PCR date' in record))
+        }
+
+        if(filter === 'Result entered'){
+            filtered = records && records.filter(record => record && 'Multiplex PCR date' in record)
         }
 
         if(search && search !== ""){
@@ -194,19 +210,18 @@ const SampleLog = ({ headers, excluded, setActive, setEditrecord, setStep, filte
                             {
                                 hasReceiptDate ?
                                 <div className='flex items-center gap-2'>
+                                {
+                                    hasResultEntry ?
+                                    <span 
+                                        className="text-xs text-accent text-white cursor-pointer px-2 py-1 rounded-full bg-green-500 hover:bg-green-700"
+                                        onClick={() => enterResult(record, 'Result Entry')}
+                                    >Result Entered</span>  
+                                    :
                                     <span 
                                         className="text-xs text-accent cursor-pointer px-2 py-1 rounded-full bg-foreground/10 hover:bg-foreground/20"
                                         onClick={() => enterResult(record, 'Result Entry')}
-                                    >Result Entry</span> 
-                                    <Dialog>
-                                        <DialogTrigger asChild>
-                                            <FileSpreadsheet className='hidden !w-4 !h-4 text-green-500 hover:text-green-700 cursor-pointer' />
-                                        </DialogTrigger>
-                                        <DialogContent>
-                                            <DialogTitle className="font-extralight">Upload Deeplex Report Spreadsheet</DialogTitle>
-                                            <div></div>
-                                        </DialogContent>
-                                    </Dialog>
+                                    >Result Entry</span>                
+                                }
                                 </div>
                                 :
                                 <span

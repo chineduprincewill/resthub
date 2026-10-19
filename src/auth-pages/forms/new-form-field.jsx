@@ -224,6 +224,7 @@ const NewFormField = ({ forms_title, formdata, action }) => {
                             <SelectItem value="checkbox">checkbox</SelectItem>
                             <SelectItem value="api">api</SelectItem>
                             <SelectItem value="textarea">textarea</SelectItem>
+                            <SelectItem value="none">none</SelectItem>
                         </SelectGroup>
                     </SelectContent>
                 </Select>

@@ -613,6 +613,7 @@ const AddSamplePage = ({ setActive, editrecord, setEditrecord, fmtitle, step }) 
                 {formfields && formfields.map((field) => {
                     if (!shouldRenderField(field, formdata)) return null;
                     if (field.forms_sub_title === SEQUENCING_CATEGORY) return null;
+                    //if (field.forms_type === "none") return null;
 
                     return <div key={field.id} 
                         className={
