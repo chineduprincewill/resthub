@@ -116,7 +116,11 @@ const DataTable = ({ data, columns, filterArrs }) => {
                         {table.getHeaderGroups().map((headerGroup) => {
                             return (<TableRow key={headerGroup.id}>
                                 {headerGroup.headers.map((header) => (
-                                    <TableHead key={header.id} className="gradient-title min-h-12 min-w-40 text-sm">
+                                    <TableHead 
+                                        key={header.id} 
+                                        className="gradient-title min-h-12 min-w-40 text-sm !text-wrap"
+                                        style={{ width: header.getSize(), minWidth: header.getSize(), maxWidth: header.getSize() }}
+                                    >
                                         {header.isPlaceholder
                                             ? null
                                             : flexRender(

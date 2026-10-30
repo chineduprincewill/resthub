@@ -65,8 +65,14 @@ const Dashboard = () => {
                         <div>
                             <p className="text-lg font-extralight text-foreground">Pending Receipt</p>
                             <p className="text-xs text-muted-foreground hover:text-foreground mt-1 cursor-pointer">
-                                <span className='cursor-pointer hover:text-accent'>Number of samples awaiting receipt</span>
+                                <span 
+                                    className='cursor-pointer hover:text-accent'
+                                >Number of samples awaiting receipt.</span>
                             </p>
+                            <p 
+                                className='text-blue-500 hover:text-blue-700 text-sm cursor-pointer'
+                                onClick={() => navigate('/sample')}
+                            >view more...</p>
                         </div>
                         <div className='p-2 bg-foreground/10 rounded-md'>
                             <span className='text-3xl'>{statistics && statistics.unreceived}</span>
@@ -79,8 +85,14 @@ const Dashboard = () => {
                         <div>
                             <p className="text-lg font-extralight text-foreground">Awaiting Shipping</p>
                             <p className="text-xs text-muted-foreground hover:text-foreground mt-1 cursor-pointer">
-                            <span className='cursor-pointer hover:text-accent'>Number of samples awaiting shipping</span>
+                            <span 
+                                className='cursor-pointer hover:text-accent'
+                            >Number of samples awaiting shipping.</span>
                             </p>
+                            <p 
+                                className='text-blue-500 hover:text-blue-700 text-sm cursor-pointer'
+                                onClick={() => navigate('/sample')}
+                            >view more...</p>
                         </div>
                         <div className='p-2 bg-foreground/10 rounded-md'>
                             <span className='text-3xl'>{statistics && statistics.unshipped}</span>
@@ -95,8 +107,14 @@ const Dashboard = () => {
                         <div>
                             <p className="text-lg font-extralight text-foreground">Awaiting Result</p>
                             <p className="text-xs text-muted-foreground hover:text-foreground mt-1 cursor-pointer">
-                            <span className='cursor-pointer hover:text-accent'>Number of samples awaiting result entry</span>
+                            <span 
+                                className='cursor-pointer hover:text-accent'
+                            >Number of samples awaiting result entry. </span>
                             </p>
+                            <p 
+                                className='text-blue-500 hover:text-blue-700 text-sm cursor-pointer'
+                                onClick={() => navigate('/sample')}
+                            >view more...</p>
                         </div>
                         <div className='p-2 bg-foreground/10 rounded-md'>
                             <span className='text-3xl'>{statistics && statistics.unentered}</span>

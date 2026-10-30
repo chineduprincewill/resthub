@@ -18,7 +18,7 @@ const SamplePage = () => {
     const [isLoading, setIsLoading] = useState(false)
     const [active, setActive] = useState('log');
     const [excluded, setExcluded] = useState([
-        "pDST result", "gDST (LPA) result", "gDST (Xpert) result"
+        "pDST result", "gDST (LPA) result", "gDST (Xpert) result", "gDNA Quality (260/230nm)|Mechanical", "gDNA Extraction/Inactivation Method", "gDNA Quality (260/280nm)|Mechanical", "Repeat gDNA Quality(260/280nm)", "gDNA Quantity(ng/ul)|Mechanical", "gDNA Quality (260/280nm)|Genolyse", "gDNA Quality (260/230nm)|Genolyse", "Repeat gDNA Quantity(ng/ul)", "gDNA Extract Volume (uL)|Genolyse", "gDNA Quantity(ng/ul)|Genolyse", "gDNA Extract Volume (uL)|Mechanical", "gDNA Quantity | Qubit-Mechanical", "gDNA Quantity | Qubit-Genolyse"
     ])
     const [editrecord, setEditrecord] = useState();
     const [step, setStep] = useState();

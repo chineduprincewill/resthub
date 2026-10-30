@@ -40,20 +40,21 @@ const Sidebar = ({ isOpen, onClose, isCollapsed, onCollapsedChange }) => {
     const ntrlNavItems = [
         { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
         { href: "/sample", label: "Add Sample", icon: FolderPlus },
-        //{ href: "/analytics", label: "Analytics", icon: ChartArea },
+        { href: "/analytics", label: "Analytics", icon: ChartArea },
         { href: "/settings", label: "Settings", icon: Settings },
     ];
 
     const nrlNavItems = [
         { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
         { href: "/sample", label: "Receive Sample", icon: FolderPlus },
-        //{ href: "/analytics", label: "Analytics", icon: ChartArea },
+        { href: "/analytics", label: "Analytics", icon: ChartArea },
         { href: "/settings", label: "Settings", icon: Settings },
     ];
 
     const adminNavItems = [
         { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
         { href: "/sample", label: "Samples", icon: FolderPlus },
+        { href: "/analytics", label: "Analytics", icon: ChartArea },
         { href: "/accounts", label: "Accounts", icon: Users },
         { href: "/configurations", label: "Configurations", icon: Cog },
     ];

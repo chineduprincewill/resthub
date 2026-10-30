@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from '../../components/ui/dialog';
 import { Input } from '../../components/ui/input';
 import ChangeRequest from './change-request';
+import { format } from 'date-fns';
 
 const SampleLog = ({ headers, excluded, setActive, setEditrecord, setStep, filter }) => {
 
@@ -112,18 +113,25 @@ const SampleLog = ({ headers, excluded, setActive, setEditrecord, setStep, filte
             str.replace(/\s+/g, ' ').trim().toLowerCase();
     
         setColumns(prev => {
+            const userObj = user ? JSON.parse(user) : null;
+            const isNTRL = userObj?.organization_category === 'NTRL';
+            const showOrganization = !isNTRL;
+        
             const excludedSet = new Set(excluded.map(normalize));
             const allowedHeaders = headers.filter(
                 h => !excludedSet.has(normalize(h))
             );
             const allowedSet = new Set(allowedHeaders);
-    
+        
             // 1. Keep only columns that are still allowed (preserves user order),
-            //    but NEVER drop the actions column
+            //    but NEVER drop the actions or organization columns
             const kept = prev.filter(
-                c => c.accessorKey === 'actions' || allowedSet.has(c.accessorKey)
+                c =>
+                    c.accessorKey === 'actions' ||
+                    c.accessorKey === 'organization' ||
+                    allowedSet.has(c.accessorKey)
             );
-    
+        
             // 2. Add allowed headers that aren't already present
             const existing = new Set(kept.map(c => c.accessorKey));
             const added = allowedHeaders
@@ -134,144 +142,194 @@ const SampleLog = ({ headers, excluded, setActive, setEditrecord, setStep, filte
                     enableSorting: true,
                     enableColumnFilter: true,
                 }));
-    
-            // 3. Always ensure the actions column exists — append it last
-            const hasActions = kept.some(c => c.accessorKey === 'actions');
+        
+            // 3. Actions column definition
             const actionsColumn = {
                 id: 'actions',
-                header: '',                 // optional: no header label
+                accessorKey: 'actions',
+                header: '',
                 enableSorting: false,
                 enableColumnFilter: false,
+                size: 60,          // fixed width in px
+                minSize: 60,       // prevents resizing below this
+                maxSize: 60,       // prevents resizing above this
                 cell: ({ row }) => {
                     const record = row.original;
                     const hasShipmentDate = record && 'Shipment Date' in record;
                     const hasReceiptDate = record && 'gDNA Extract Receipt Date' in record;
                     const hasResultEntry = record && 'Multiplex PCR date' in record;
-                
+        
                     return (
-                        <div className="w-full flex items-center gap-3">
-                        {
-                            user && JSON.parse(user).organization_category !== 'NTRL' && JSON.parse(user).organization_category !== 'NRL' &&
-                            <Eye 
-                                className='!w-4 !h-4 cursor-pointer'
-                                onClick={() => enterResult(record, 'View all')}
-                            />
-                        }
-                        {
-                            user && JSON.parse(user).organization_category === 'NTRL' &&
-                            <>
+                        <div className="flex items-center gap-3">
                             {
-                                hasShipmentDate ?
-                                <Search
-                                    className="h-4 w-4 cursor-pointer"
-                                    onClick={() => editFormRecord(record)}
-                                    title='View sample'
-                                /> :
-                                <Edit
-                                    className="h-4 w-4 cursor-pointer"
-                                    onClick={() => editFormRecord(record)}
-                                    title='Edit sample'
+                                user && JSON.parse(user).organization_category !== 'NTRL' && JSON.parse(user).organization_category !== 'NRL' &&
+                                <Eye
+                                    className='!w-4 !h-4 cursor-pointer'
+                                    onClick={() => enterResult(record, 'View all')}
                                 />
                             }
-                                
-                                <span
-                                    className={
-                                        `text-sm 
-                                        ${hasShipmentDate ? 'text-muted-foreground/30 cursor-not-allowed' : 'cursor-pointer text-accent'}`}
-                                    onClick={() => hasShipmentDate ? {} : handleSampleShipping(record)}
-                                >
-                                {
-                                    hasShipmentDate ? <CircleCheckBig className='!w-4 !h-4 text-green-600' /> : 'Ship'
-                                }
-                                </span>
-                                {
-                                    sample_to_ship && sample_to_ship.form_id === record.form_id && shipping && <span className='italic text-sm font-extralight text-muted-foreground'>Shipping...</span>
-                                }
-                                {
-                                    hasShipmentDate && !hasReceiptDate &&
-                                    <Dialog>
-                                        <DialogTrigger asChild>
-                                            <Undo2 
-                                                className="h-4 w-4 cursor-pointer"
-                                                title='Undo shipping'
-                                            />
-                                        </DialogTrigger>
-                                        <DialogContent>
-                                            <DialogTitle className="font-extralight">Request to revert Sample Shipment</DialogTitle>
-                                            <ChangeRequest record={record} request_on='Shipment Date' />
-                                        </DialogContent>
-                                    </Dialog>
-                                }
-                            </>
-                        } 
-                        {
-                            user && JSON.parse(user).organization_category === 'NRL' && 
-                            <>
                             {
-                                hasReceiptDate ?
-                                <div className='flex items-center gap-2'>
-                                {
-                                    hasResultEntry ?
-                                    <span 
-                                        className="text-xs text-accent text-white cursor-pointer px-2 py-1 rounded-full bg-green-500 hover:bg-green-700"
-                                        onClick={() => enterResult(record, 'Result Entry')}
-                                    >Result Entered</span>  
-                                    :
-                                    <span 
-                                        className="text-xs text-accent cursor-pointer px-2 py-1 rounded-full bg-foreground/10 hover:bg-foreground/20"
-                                        onClick={() => enterResult(record, 'Result Entry')}
-                                    >Result Entry</span>                
-                                }
-                                </div>
-                                :
-                                <span
-                                    className="text-xs text-accent cursor-pointer px-2 py-1 rounded-full bg-foreground/10 hover:bg-foreground/20"
-                                    onClick={() => editFormRecord(record)}
-                                >Receive Sample</span>
-                            }
-                            {
-                                hasReceiptDate && !hasResultEntry &&
-                                <Dialog>
-                                    <DialogTrigger asChild>
-                                        <Undo2 
+                                user && JSON.parse(user).organization_category === 'NTRL' &&
+                                <>
+                                    {
+                                        hasShipmentDate ?
+                                        <Search
                                             className="h-4 w-4 cursor-pointer"
-                                            title='Undo shipping'
+                                            onClick={() => editFormRecord(record)}
+                                            title='View sample'
+                                        /> :
+                                        <Edit
+                                            className="h-4 w-4 cursor-pointer"
+                                            onClick={() => editFormRecord(record)}
+                                            title='Edit sample'
                                         />
-                                    </DialogTrigger>
-                                    <DialogContent>
-                                        <DialogTitle className="font-extralight">Request to revert Sample receipt</DialogTitle>
-                                        <ChangeRequest record={record} request_on='Receive Sample' />
-                                    </DialogContent>
-                                </Dialog>
+                                    }
+                                    <span
+                                        className={
+                                            `text-sm 
+                                            ${hasShipmentDate ? 'text-muted-foreground/30 cursor-not-allowed' : 'cursor-pointer text-accent'}`}
+                                        onClick={() => hasShipmentDate ? {} : handleSampleShipping(record)}
+                                    >
+                                    {
+                                        hasShipmentDate ? <CircleCheckBig className='!w-4 !h-4 text-green-600' /> : 'Ship'
+                                    }
+                                    </span>
+                                    {
+                                        sample_to_ship && sample_to_ship.form_id === record.form_id && shipping && <span className='italic text-sm font-extralight text-muted-foreground'>Shipping...</span>
+                                    }
+                                    {
+                                        hasShipmentDate && !hasReceiptDate &&
+                                        <Dialog>
+                                            <DialogTrigger asChild>
+                                                <Undo2
+                                                    className="h-4 w-4 cursor-pointer"
+                                                    title='Undo shipping'
+                                                />
+                                            </DialogTrigger>
+                                            <DialogContent>
+                                                <DialogTitle className="font-extralight">Request to revert Sample Shipment</DialogTitle>
+                                                <ChangeRequest record={record} request_on='Shipment Date' />
+                                            </DialogContent>
+                                        </Dialog>
+                                    }
+                                </>
                             }
-                            </>
-                        }
-                        
+                            {
+                                user && JSON.parse(user).organization_category === 'NRL' &&
+                                <>
+                                    {
+                                        hasReceiptDate ?
+                                        <div className='flex items-center gap-2'>
+                                        {
+                                            hasResultEntry ?
+                                            <span
+                                                className="text-xs text-accent text-white cursor-pointer px-2 py-1 rounded-full bg-green-500 hover:bg-green-700"
+                                                onClick={() => enterResult(record, 'Result Entry')}
+                                            >Result Entered</span>
+                                            :
+                                            <span
+                                                className="text-xs text-accent cursor-pointer px-2 py-1 rounded-full bg-foreground/10 hover:bg-foreground/20"
+                                                onClick={() => enterResult(record, 'Result Entry')}
+                                            >Result Entry</span>
+                                        }
+                                        </div>
+                                        :
+                                        <span
+                                            className="text-xs text-accent cursor-pointer px-2 py-1 rounded-full bg-foreground/10 hover:bg-foreground/20"
+                                            onClick={() => editFormRecord(record)}
+                                        >Receive Sample</span>
+                                    }
+                                    {
+                                        hasReceiptDate && !hasResultEntry &&
+                                        <Dialog>
+                                            <DialogTrigger asChild>
+                                                <Undo2
+                                                    className="h-4 w-4 cursor-pointer"
+                                                    title='Undo shipping'
+                                                />
+                                            </DialogTrigger>
+                                            <DialogContent>
+                                                <DialogTitle className="font-extralight">Request to revert Sample receipt</DialogTitle>
+                                                <ChangeRequest record={record} request_on='Receive Sample' />
+                                            </DialogContent>
+                                        </Dialog>
+                                    }
+                                </>
+                            }
                         </div>
                     );
                 },
             };
-    
-            const withActions = hasActions
-                ? kept                       // already present
-                : [...kept, actionsColumn];  // append once
-    
-            // Also append if there are new columns to add
-            const finalColumns = added.length > 0
-                ? [
-                    ...withActions.filter(c => c.accessorKey !== 'actions'),
-                    ...added,
-                    actionsColumn,
-                ]
-                : withActions;
-    
-            // Avoid re-render if nothing changed
+        
+            // 4. Organization column — only for non-NTRL users
+            const organizationColumn = {
+                id: 'organization',
+                accessorKey: 'organization',
+                header: 'Organization',
+                enableSorting: true,
+                enableColumnFilter: true,
+                accessorFn: (row) => row['Organization'] ?? row.organization ?? '',
+                cell: ({ row }) => {
+                    const record = row.original;
+        
+                    const orgValue =
+                        record['Organization'] ?? record.organization ?? '';
+        
+                    const emailValue =
+                        record['Email'] ?? record.email ?? '';
+        
+                    const createdAtRaw =
+                        record['created_at'] ?? record.created_at ?? record['Created At'] ?? null;
+        
+                    // Format created_at only if present and parseable
+                    let createdAtValue = '';
+                    if (createdAtRaw) {
+                        //const d = new Date(String(createdAtRaw).replace(' ', 'T'));
+                        createdAtValue = format(createdAtRaw, 'PPP') //isNaN(d.getTime())
+                           // ? String(createdAtRaw)
+                           // : d.toLocaleString(); // swap for your preferred format
+                    }
+        
+                    return (
+                        <div className="flex flex-col gap-0.5 leading-tight">
+                            {orgValue && <span className="font-extralight">{orgValue}</span>}
+                            <div className='flex items-center gap-1'>
+                                {emailValue && (
+                                    <span className="text-xs text-muted-foreground">{emailValue},</span>
+                                )}
+                                {createdAtValue && (
+                                    <span className="text-xs text-muted-foreground">{createdAtValue}</span>
+                                )}
+                            </div>
+                        </div>
+                    );
+                },
+            };
+        
+            // 5. Build the base data columns (everything except actions & organization),
+            //    stripping any stale special columns first
+            let dataColumns = kept.filter(
+                c => c.accessorKey !== 'actions' && c.accessorKey !== 'organization'
+            );
+        
+            // 6. Merge in newly allowed headers
+            if (added.length > 0) {
+                dataColumns = [...dataColumns, ...added];
+            }
+        
+            // 7. Assemble final order:
+            //    [actions] [organization (if allowed)] [...data columns]
+            const finalColumns = showOrganization
+                ? [actionsColumn, organizationColumn, ...dataColumns]
+                : [actionsColumn, ...dataColumns];
+        
+            // 8. Avoid re-render if nothing changed
             const unchanged =
                 finalColumns.length === prev.length &&
                 finalColumns.every((c, i) => c.accessorKey === prev[i]?.accessorKey);
-    
+        
             if (unchanged) return prev;
-    
+        
             return finalColumns;
         });
     }, [headers, excluded]);
@@ -286,6 +344,9 @@ const SampleLog = ({ headers, excluded, setActive, setEditrecord, setStep, filte
     useEffect(() => {
         fetchOrgAddSampleRecords(token, setRecords, setError, setIsLoading)
     }, [record])
+
+    console.log(records && records)
+    console.log(columns)
 
     return(
         <div className="w-full p-4 bg-background rounded-xl overflow-hidden mb-4">
